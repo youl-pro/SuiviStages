@@ -4,3 +4,14 @@ GET {{SuiviStages_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST https://localhost:7092/api/candidatures
+Content-Type: application/json
+
+{
+  "entreprise": "Google",
+  "poste": "Stagiaire développeur",
+  "status": "envoyée",
+  "notes": "",
+  "lien": null
+}
