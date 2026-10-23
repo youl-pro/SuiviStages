@@ -23,14 +23,14 @@ namespace SuiviStages.Controllers
         }
 
         // [HttpGet] : cette méthode répond aux requêtes GET sur /api/candidatures
-       [HttpGet]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Candidature>>> GetCandidatures()
         {
             return await _context.Candidatures.ToListAsync();
         }
-       
 
-   
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Candidature>> GetCandidature(int id)
         {
@@ -49,10 +49,32 @@ namespace SuiviStages.Controllers
         [HttpPost]
         public async Task<ActionResult<Candidature>> CreateCandidature(Candidature c)
         {
-           c.DateCandidature = DateTime.UtcNow;
+            c.DateCandidature = DateTime.UtcNow;
             _context.Candidatures.Add(c);
-             await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return Ok(c);
+        }
+
+        [HttpDelete("{id}")]
+
+        public async Task<ActionResult<Candidature>> DeleteCandidature(int id)
+        {
+            var c =  await _context.Candidatures.FindAsync(id);
+
+            if (c == null)
+            {
+                return NotFound();
+            }
+
+            else
+            {
+                _context.Candidatures.Remove(c);
+                await _context.SaveChangesAsync();
+
+                return Ok(c);
+            
+            }
+
         }
     }
 }

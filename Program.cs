@@ -23,6 +23,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 
+
+// On définit une politique CORS nommée "ReactDev".
+// Elle autorise les demandes venant de l'adresse du serveur de développement
+// de React (Vite : http://localhost:5173), avec n'importe quel en-tête et
+// n'importe quelle méthode (GET, POST, DELETE...).
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactDev", policy =>
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,6 +46,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// On active la politique CORS définie plus haut
+app.UseCors("ReactDev");
 
 app.UseAuthorization();
 
