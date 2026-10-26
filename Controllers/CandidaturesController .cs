@@ -55,6 +55,7 @@ namespace SuiviStages.Controllers
             return Ok(c);
         }
 
+
         [HttpDelete("{id}")]
 
         public async Task<ActionResult<Candidature>> DeleteCandidature(int id)
