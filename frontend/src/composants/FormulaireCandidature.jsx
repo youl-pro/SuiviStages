@@ -1,13 +1,14 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 
-function AjouterCandidature({ setCandidatures, fermerFormulaire }) {
+function FormulaireCandidature({ setCandidatures, fermerFormulaire}) {
   const [entreprise, setEntreprise] = useState('');
   const [poste, setPoste] = useState('');
   const [status, setStatus] = useState('');
 
+  // ajouter une candidature.
   async function ajoutCandidature() {
     try {
       const reponse = await fetch(
@@ -36,13 +37,14 @@ function AjouterCandidature({ setCandidatures, fermerFormulaire }) {
       setEntreprise('');
       setPoste('');
       setStatus('');
-
       fermerFormulaire();
 
     } catch (erreur) {
       console.error("Erreur lors de l'ajout :", erreur);
     }
   }
+
+
 
   return (
     <div className="container mt-5">
@@ -161,4 +163,4 @@ function AjouterCandidature({ setCandidatures, fermerFormulaire }) {
   );
 }
 
-export default AjouterCandidature;
+export default FormulaireCandidature
