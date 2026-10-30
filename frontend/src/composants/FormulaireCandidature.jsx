@@ -3,10 +3,27 @@ import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
 
-function FormulaireCandidature({ setCandidatures, fermerFormulaire}) {
+function FormulaireCandidature({ setCandidatures, fermerFormulaire,  candidatureAmodifiee}) {
   const [entreprise, setEntreprise] = useState('');
   const [poste, setPoste] = useState('');
   const [status, setStatus] = useState('');
+
+
+useEffect(() =>{
+
+  if (!candidatureAmodifiee )
+  {
+     return
+  }
+else 
+{
+  setEntreprise(candidatureAmodifiee.entreprise);
+  setPoste(candidatureAmodifiee.poste);
+  setStatus(candidatureAmodifiee.status);
+}
+
+}, [candidatureAmodifiee])
+
 
   // ajouter une candidature.
   async function ajoutCandidature() {
@@ -46,6 +63,44 @@ function FormulaireCandidature({ setCandidatures, fermerFormulaire}) {
 
 
 
+  // Modifier une candidature
+async function modifierCandidature(c){
+try 
+{
+  const reponse = await fetch(`https://localhost:7092/api/candidatures/${c.id}`, {
+
+ method : 'PUT', 
+
+ headers :  {
+            'Content-Type': 'application/json'
+          },
+
+          body : JSON.stringify({
+          entreprise : entreprise,
+          poste : poste,
+          status :  status,
+})
+
+})
+if(!reponse.ok){
+
+ throw new Error ("Erreur lors du modification !");
+
+}
+ const candidatAModifie =  await reponse.json();
+
+setCandidatures(prev=> prev.map(p => p.id === candidatAModifie.id ? candidatAModifie : p ))
+
+fermerFormulaire();
+}
+catch(erreur)
+{
+    console.error("Erreur lors de la modification: ", erreur);
+}
+
+
+}
+
   return (
     <div className="container mt-5">
       <div
@@ -56,12 +111,19 @@ function FormulaireCandidature({ setCandidatures, fermerFormulaire}) {
 
           {/* Titre et description */}
           <div className="mb-4">
-            <h2
+            {candidatureAmodifiee ?  (<h2
               className="fw-bold mb-2"
               style={{ color: 'tomato' }}
             >
-              Ajouter une candidature
-            </h2>
+            Modifier une candidature
+            </h2>  
+) : (  <h2
+              className="fw-bold mb-2"
+              style={{ color: 'tomato' }}
+            >
+            Ajouter une candidature
+            </h2>  )  }
+{/* =============================================*/}
 
             <p className="text-white-50 mb-0">
               Renseignez les informations du poste
@@ -70,8 +132,16 @@ function FormulaireCandidature({ setCandidatures, fermerFormulaire}) {
 
           <form
             onSubmit={(e) => {
-              e.preventDefault();
+               e.preventDefault();
+              if(candidatureAmodifiee){
+                
+                  modifierCandidature(candidatureAmodifiee);
+              }
+              else{
               ajoutCandidature();
+              }
+            
+         
             }}
           >
             {/* Champ Entreprise */}

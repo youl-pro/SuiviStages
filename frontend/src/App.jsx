@@ -5,8 +5,9 @@ import FormulaireCandidature from './composants/FormulaireCandidature';
 
 function App() {
   const [candidatures, setCandidatures] = useState([]);
-  const [AfficherformulaireDAjout, SetAfficherformulaireDAjout] =
-    useState(false);
+  const [Afficherformulaire, setAfficherformulaire] = useState(false);
+
+const [candidatureAmodifiee, setCandidatureAmodifiee] = useState(null);
 
   // chargement du tableau candidatures
     useEffect(() => {
@@ -24,6 +25,7 @@ function App() {
 
 
 
+
   //supprimer un candidature
 async function supprimerCandidature(candidatureASup)
   {
@@ -37,56 +39,15 @@ catch(erreur)
     { console.error("Erreur lors de la suppression: ", erreur);}
 }
 
-  
-// Modifier une candidature
-async function modifierCandidature(candidatAModifier){
-try 
-{
-  const reponse = await fetch(`https://localhost:7092/api/candidatures/${candidatAModifier.id}`, {
-
- method : 'PUT', 
-
- headers :  {
-            'Content-Type': 'application/json'
-          },
-
-          body : JSON.stringify({
-           entreprise : candidatAModifier.entreprise,
-           poste : candidatAModifier.poste,
-           status : candidatAModifier.status,
-})
-
-})
-
-if(!reponse.ok){
-
- throw new Error ("Erreur lors du modification !");
-
-}
- const candidatAModifie =  await reponse.json();
-
-setCandidatures(prev=> prev.map(p => p.id === candidatAModifie.id ? candidatAModifie : p ))
-
-}
-catch(erreur)
-{
-    console.error("Erreur lors de la modification: ", erreur);
-}
-
-
-}
-
-
-
-
   return (
     <div className="container text-center">
 
-      {AfficherformulaireDAjout ? (
+      {Afficherformulaire ? (
         // Afficher le formulaire
         <FormulaireCandidature
           setCandidatures={setCandidatures}
-          fermerFormulaire={() => SetAfficherformulaireDAjout(false)}
+          candidatureAmodifiee = {candidatureAmodifiee}
+          fermerFormulaire={() => setAfficherformulaire(false)}
         />
       ) : (
         // Afficher le tableau
@@ -96,7 +57,13 @@ catch(erreur)
 
             <button
               className="btn-ajouter"
-              onClick={() => SetAfficherformulaireDAjout(true)}
+              onClick={()=>{
+                setCandidatureAmodifiee(null);
+                setAfficherformulaire(true);
+
+              }
+            }
+                
             >
               + Ajouter
             </button>
@@ -121,7 +88,11 @@ catch(erreur)
                     <td className="text-white">{c.status}</td>
                     <td>
                       <button className="btn btn-danger btn-sm" onClick={()=>supprimerCandidature(c)}> Supprimer </button>
-                      <button className="btn btn-primary btn-sm" onClick={()=>modifierCandidature(c)}> Modifier </button>
+                      <button className="btn btn-primary btn-sm" onClick={ () => {
+                        setCandidatureAmodifiee(c);
+                        setAfficherformulaire(true);
+                        
+                      } }> Modifier </button>
                     </td>    
                   </tr>
                 ))}
